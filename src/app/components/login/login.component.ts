@@ -46,18 +46,18 @@ export class LoginComponent implements OnInit {
     console.log('🎯 LoginComponent: Constructor called');
     
     this.loginForm = this.formBuilder.group({
-      email: ['string@gmail.com', [Validators.required, Validators.email]],
-      password: ['string', [Validators.required, Validators.minLength(6)]]
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
     });
-    console.log('✅ LoginComponent: loginForm créé avec données de test préremplies');
+    console.log('✅ LoginComponent: loginForm créé');
 
     this.registerForm = this.formBuilder.group({
-      email: ['test@example.com', [Validators.required, Validators.email]],
-      username: ['testuser', [Validators.required, Validators.minLength(2)]],
-      password: ['testpassword', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['testpassword', [Validators.required]]
+      email: ['', [Validators.required, Validators.email]],
+      username: ['', [Validators.required, Validators.minLength(2)]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required]]
     }, { validators: LoginComponent.passwordMatchValidator });
-    console.log('✅ LoginComponent: registerForm créé avec données de test préremplies');
+    console.log('✅ LoginComponent: registerForm créé');
   }
 
   ngOnInit(): void {

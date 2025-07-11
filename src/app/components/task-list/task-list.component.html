@@ -101,10 +101,10 @@
 
           <div class="task-info" [class.completed]="task.done">
             <h4 class="task-title">{{ task.label }}</h4>
-            <div class="task-meta">
+            <div class="task-meta" *ngIf="task.created_at">
               <span class="task-date">
                 <mat-icon>schedule</mat-icon>
-                {{ formatDate(task.createdAt) }}
+                {{ formatDate(task.created_at) }}
               </span>
             </div>
           </div>

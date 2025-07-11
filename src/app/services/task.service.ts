@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable, throwError, forkJoin, of } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { Task, CreateTaskRequest, UpdateTaskRequest, TaskResponse, TaskFilter } from '../models/task.model';
 import { AuthService } from './auth.service';
 
@@ -38,14 +38,25 @@ export class TaskService {
       headers: this.authService.getAuthHeaders(),
       params
     }).pipe(
-      map(response => response.data || []),
+      map(response => {
+        console.log('📋 TaskService.getTasks: Réponse brute de l\'API =', response);
+        const tasks = response.data || [];
+        console.log('📋 TaskService.getTasks: Tâches extraites =', tasks.length, 'tâche(s)');
+        if (tasks.length > 0) {
+          console.log('📋 TaskService.getTasks: Structure première tâche =', tasks[0]);
+        }
+        return tasks;
+      }),
       catchError(this.handleError)
     );
   }
 
   /**
    * Récupérer une tâche par son ID
+   * NOTE: Cet endpoint n'est pas documenté dans l'API officielle
+   * Utiliser getTasks() et filtrer par ID si nécessaire
    */
+  /* 
   getTask(id: string): Observable<Task> {
     return this.http.get<Task>(`${this.apiUrl}/task/${id}/user`, {
       headers: this.authService.getAuthHeaders()
@@ -53,6 +64,7 @@ export class TaskService {
       catchError(this.handleError)
     );
   }
+  */
 
   /**
    * Créer une nouvelle tâche
@@ -63,12 +75,25 @@ export class TaskService {
     console.log('📝 TaskService.createTask: URL =', `${this.apiUrl}/task`);
     console.log('📝 TaskService.createTask: Headers =', this.authService.getAuthHeaders());
     
-    return this.http.post<TaskResponse>(`${this.apiUrl}/task`, taskData, {
+    return this.http.post<any>(`${this.apiUrl}/task`, taskData, {
       headers: this.authService.getAuthHeaders()
     }).pipe(
       map(response => {
         console.log('✅ TaskService.createTask: Réponse reçue =', response);
-        return response.data[0] || taskData as any;
+        console.log('✅ TaskService.createTask: Type de response.data =', typeof response.data, response.data);
+        
+        // L'API retourne {data: null} après création, donc on simule la tâche créée
+        // avec un ID temporaire qui sera remplacé lors du rechargement
+        const newTask: Task = {
+          id: Date.now().toString(), // ID temporaire
+          label: taskData.label,
+          done: false,
+          created_at: new Date().toISOString(),
+          id_user: this.authService.getCurrentUser()?.id || ''
+        };
+        
+        console.log('✅ TaskService.createTask: Tâche simulée =', newTask);
+        return newTask;
       }),
       catchError(error => {
         console.error('❌ TaskService.createTask: Erreur =', error);
@@ -113,13 +138,78 @@ export class TaskService {
   }
 
   /**
-   * Supprimer toutes les tâches terminées
+   * Supprimer plusieurs tâches via l'endpoint officiel
    */
-  deleteCompletedTasks(): Observable<void> {
-    return this.http.post<void>(`${this.API_URL}/task/delete/user`, {ids: []}, {
+  deleteMultipleTasks(taskIds: string[]): Observable<void> {
+    console.log('🗑️ TaskService.deleteMultipleTasks: Suppression via endpoint officiel');
+    console.log('🗑️ TaskService.deleteMultipleTasks: IDs à supprimer =', taskIds);
+    
+    return this.http.post<void>(`${this.apiUrl}/task/delete/user`, {
+      task_ids: taskIds // Selon la doc API, probablement ce format
+    }, {
       headers: this.authService.getAuthHeaders()
     }).pipe(
-      catchError(this.handleError)
+      tap(() => console.log('✅ TaskService.deleteMultipleTasks: Suppression réussie')),
+      catchError(error => {
+        console.error('❌ TaskService.deleteMultipleTasks: Erreur lors de la suppression', error);
+        return this.handleError(error);
+      })
+    );
+  }
+
+  /**
+   * Supprimer toutes les tâches terminées (version optimisée)
+   */
+  deleteCompletedTasks(): Observable<void> {
+    console.log('🗑️ TaskService.deleteCompletedTasks: Début de la suppression en masse');
+    
+    // D'abord récupérer toutes les tâches pour identifier celles qui sont terminées
+    return this.getTasks().pipe(
+      switchMap(tasks => {
+        console.log('📋 TaskService.deleteCompletedTasks: Tâches récupérées =', tasks.length);
+        const completedTasks = tasks.filter(task => task.done);
+        
+        if (completedTasks.length === 0) {
+          console.log('💡 TaskService.deleteCompletedTasks: Aucune tâche terminée à supprimer');
+          return of(null);
+        }
+        
+        const completedTaskIds = completedTasks.map(t => t.id);
+        console.log(`🗑️ TaskService.deleteCompletedTasks: Suppression de ${completedTasks.length} tâche(s) terminée(s)`);
+        console.log('🗑️ TaskService.deleteCompletedTasks: IDs à supprimer =', completedTaskIds);
+        
+        // Essayer d'abord l'endpoint officiel de suppression en masse
+        console.log('🔄 TaskService.deleteCompletedTasks: Tentative avec endpoint officiel POST /task/delete/user');
+        return this.deleteMultipleTasks(completedTaskIds).pipe(
+          tap(() => console.log('✅ TaskService.deleteCompletedTasks: Suppression en masse réussie avec endpoint officiel')),
+          catchError(error => {
+            console.warn('⚠️ TaskService.deleteCompletedTasks: Endpoint officiel échoué, fallback vers suppression individuelle');
+            console.warn('⚠️ TaskService.deleteCompletedTasks: Erreur endpoint officiel =', error);
+            
+            // Fallback : supprimer chaque tâche individuellement
+            const deleteRequests = completedTasks.map(task => 
+              this.deleteTask(task.id).pipe(
+                tap(() => console.log(`✅ TaskService.deleteCompletedTasks: Tâche ${task.id} supprimée avec succès (mode individuel)`)),
+                catchError(error => {
+                  console.error(`❌ TaskService.deleteCompletedTasks: Erreur suppression tâche ${task.id}`, error);
+                  return throwError(() => error);
+                })
+              )
+            );
+            
+            console.log(`🔄 TaskService.deleteCompletedTasks: Lancement de ${deleteRequests.length} requêtes individuelles`);
+            return forkJoin(deleteRequests);
+          })
+        );
+      }),
+      map(() => {
+        console.log('✅ TaskService.deleteCompletedTasks: Suppression en masse terminée avec succès');
+        return void 0;
+      }),
+      catchError(error => {
+        console.error('❌ TaskService.deleteCompletedTasks: Erreur lors de la suppression en masse', error);
+        return this.handleError(error);
+      })
     );
   }
 

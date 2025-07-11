@@ -193,8 +193,13 @@ export class TaskListComponent implements OnInit {
   }
 
   clearCompletedTasks(): void {
+    console.log('🗑️ TaskListComponent.clearCompletedTasks: Début de la suppression en masse depuis le composant');
+    
     const completedTasks = this.tasks.filter(task => task.done);
+    console.log(`📊 TaskListComponent.clearCompletedTasks: ${completedTasks.length} tâche(s) terminée(s) détectée(s)`);
+    
     if (completedTasks.length === 0) {
+      console.log('💡 TaskListComponent.clearCompletedTasks: Aucune tâche terminée à supprimer');
       this.snackBar.open('Aucune tâche terminée à supprimer', 'Fermer', {
         duration: 3000,
         panelClass: ['info-snackbar']
@@ -202,16 +207,20 @@ export class TaskListComponent implements OnInit {
       return;
     }
 
+    console.log('🔄 TaskListComponent.clearCompletedTasks: Appel du service de suppression...');
     this.taskService.deleteCompletedTasks().subscribe({
       next: () => {
+        console.log('✅ TaskListComponent.clearCompletedTasks: Suppression réussie côté service');
         this.tasks = this.tasks.filter(task => !task.done);
         this.applyFilter();
+        console.log(`✅ TaskListComponent.clearCompletedTasks: Interface mise à jour, ${this.tasks.length} tâche(s) restante(s)`);
         this.snackBar.open(`${completedTasks.length} tâche(s) supprimée(s)`, 'Fermer', {
           duration: 3000,
           panelClass: ['success-snackbar']
         });
       },
       error: (error) => {
+        console.error('❌ TaskListComponent.clearCompletedTasks: Erreur lors de la suppression', error);
         this.snackBar.open(error, 'Fermer', {
           duration: 5000,
           panelClass: ['error-snackbar']
@@ -254,20 +263,55 @@ export class TaskListComponent implements OnInit {
     return task.id;
   }
 
-  formatDate(date: Date | string): string {
-    const taskDate = new Date(date);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - taskDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  formatDate(date: Date | string | null | undefined): string {
+    // Gestion des cas où la date est null ou undefined
+    if (!date) {
+      return '';
+    }
 
-    if (diffDays === 1) {
-      return 'Aujourd\'hui';
-    } else if (diffDays === 2) {
-      return 'Hier';
-    } else if (diffDays <= 7) {
-      return `Il y a ${diffDays - 1} jour(s)`;
-    } else {
-      return taskDate.toLocaleDateString('fr-FR');
+    let taskDate: Date;
+    
+    try {
+      // Si c'est déjà un objet Date
+      if (date instanceof Date) {
+        taskDate = date;
+      } 
+      // Si c'est une string, essayer de la parser
+      else if (typeof date === 'string') {
+        taskDate = new Date(date);
+      }
+      // Si c'est un timestamp number
+      else if (typeof date === 'number') {
+        taskDate = new Date(date);
+      }
+      // Fallback
+      else {
+        console.error('❌ TaskListComponent.formatDate: Format de date non supporté:', date);
+        return 'Date inconnue';
+      }
+
+      // Vérifier si la date est valide
+      if (isNaN(taskDate.getTime())) {
+        console.error('❌ TaskListComponent.formatDate: Date invalide après parsing:', date);
+        return 'Date invalide';
+      }
+
+      const now = new Date();
+      const diffTime = Math.abs(now.getTime() - taskDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 1) {
+        return 'Aujourd\'hui';
+      } else if (diffDays === 2) {
+        return 'Hier';
+      } else if (diffDays <= 7) {
+        return `Il y a ${diffDays - 1} jour(s)`;
+      } else {
+        return taskDate.toLocaleDateString('fr-FR');
+      }
+    } catch (error) {
+      console.error('❌ TaskListComponent.formatDate: Erreur lors du parsing de la date:', error);
+      return 'Erreur de date';
     }
   }
 

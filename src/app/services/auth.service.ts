@@ -193,12 +193,31 @@ export class AuthService {
     if (token) {
       localStorage.setItem(this.TOKEN_KEY, token);
       
-      // Stocker l'utilisateur s'il existe, sinon créer un objet minimal
-      const userToStore = user || { email: 'string@gmail.com', id: 'temp' };
-      localStorage.setItem(this.USER_KEY, JSON.stringify(userToStore));
-      this.currentUserSubject.next(userToStore);
+      // Stocker l'utilisateur s'il existe
+      if (user && user.email) {
+        localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+        this.currentUserSubject.next(user);
+        console.log('✅ AuthService.setAuthData: Utilisateur avec données complètes stocké');
+      } else {
+        // Si pas d'utilisateur dans la réponse, extraire l'email du token JWT ou utiliser une API profile
+        console.log('⚠️ AuthService.setAuthData: Pas de données utilisateur dans la réponse');
+        console.log('⚠️ AuthService.setAuthData: Tentative de récupération via token JWT ou API profile');
+        
+        // Tentative d'extraction de l'email depuis le JWT
+        const userFromToken = this.extractUserFromToken(token);
+        if (userFromToken) {
+          localStorage.setItem(this.USER_KEY, JSON.stringify(userFromToken));
+          this.currentUserSubject.next(userFromToken);
+          console.log('✅ AuthService.setAuthData: Utilisateur extrait du token JWT');
+        } else {
+          // En dernier recours, utiliser un objet minimal mais ne pas utiliser de données de test
+          const minimalUser = { email: 'utilisateur@inconnu.com', id: 'unknown' };
+          localStorage.setItem(this.USER_KEY, JSON.stringify(minimalUser));
+          this.currentUserSubject.next(minimalUser);
+          console.log('⚠️ AuthService.setAuthData: Utilisateur minimal créé');
+        }
+      }
       
-      console.log('✅ AuthService.setAuthData: Données stockées avec succès');
       console.log('✅ AuthService.setAuthData: Token stocké:', token.substring(0, 20) + '...');
     } else {
       console.error('❌ AuthService.setAuthData: Token non trouvé dans la réponse');
@@ -243,6 +262,47 @@ export class AuthService {
       return Date.now() > expiry;
     } catch (error) {
       return true; // Si on ne peut pas décoder le token, on considère qu'il est expiré
+    }
+  }
+
+  /**
+   * Extraire les données utilisateur depuis le token JWT
+   */
+  private extractUserFromToken(token: string): User | null {
+    try {
+      console.log('🔍 AuthService.extractUserFromToken: Début extraction JWT');
+      
+      // Décoder le JWT (partie payload)
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        console.error('❌ AuthService.extractUserFromToken: Format JWT invalide');
+        return null;
+      }
+      
+      const payload = parts[1];
+      const decodedPayload = atob(payload);
+      const userData = JSON.parse(decodedPayload);
+      
+      console.log('🔍 AuthService.extractUserFromToken: Payload décodé =', userData);
+      
+      // Extraire les informations utilisateur du payload
+      if (userData.email || userData.sub || userData.username) {
+        const extractedUser: User = {
+          id: userData.sub || userData.id || userData.user_id || 'unknown',
+          email: userData.email || userData.username || 'unknown@unknown.com',
+          username: userData.username || userData.name || userData.email || 'Unknown User',
+          role: userData.role || 'user'
+        };
+        
+        console.log('✅ AuthService.extractUserFromToken: Utilisateur extrait =', extractedUser);
+        return extractedUser;
+      } else {
+        console.log('⚠️ AuthService.extractUserFromToken: Pas de données utilisateur dans le token');
+        return null;
+      }
+    } catch (error) {
+      console.error('❌ AuthService.extractUserFromToken: Erreur lors du décodage:', error);
+      return null;
     }
   }
 

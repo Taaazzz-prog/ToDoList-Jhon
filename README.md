@@ -209,7 +209,49 @@ L'application détecte automatiquement l'environnement :
 
 #### Phase 3 - Migration vers backend personnalisé 🚀
 
-##### 🔄 Transition technologique
+##### � **Stratégie de migration recommandée**
+
+**🎯 Recommandation : Continuer avec l'API actuelle en priorité**
+
+L'architecture Angular actuelle est **parfaitement conçue** pour une migration facile. Il est recommandé de :
+
+1. **Perfectionner l'application frontend** avec l'API actuelle (2-3 mois)
+2. **Implémenter toutes les fonctionnalités Angular** possibles
+3. **Optimiser l'UX/UI** et les performances
+4. **Puis migrer vers le backend personnalisé** quand tout sera parfait
+
+##### 🔄 **Pourquoi cette approche est optimale :**
+
+**Avantages à court terme :**
+- ✅ **Focus sur Angular** et l'amélioration continue
+- ✅ **Moins de complexité** - Une seule technologie à la fois
+- ✅ **Résultats rapides** sur les fonctionnalités utilisateur
+- ✅ **Apprentissage progressif** des bonnes pratiques
+
+**Migration facilitée :**
+- ✅ **Services Angular déjà structurés** - Seule l'URL change !
+- ✅ **Modèles TypeScript compatibles** avec MongoDB
+- ✅ **Architecture modulaire** prête pour la transition
+- ✅ **Tests déjà en place** pour valider la migration
+
+##### 🛠️ **Facilité de la migration technique**
+
+**Changements minimes requis :**
+```typescript
+// AVANT (API actuelle)
+private readonly API_URL = 'https://todof.woopear.fr/api/v1';
+
+// APRÈS (Backend personnel)
+private readonly API_URL = 'http://localhost:3000/api/v1';
+```
+
+**Services Angular inchangés :**
+- ✅ `AuthService` - Même logique JWT
+- ✅ `TaskService` - Mêmes méthodes HTTP
+- ✅ Composants - Aucune modification nécessaire
+- ✅ Models - Compatible avec MongoDB/MySQL
+
+##### �🔄 Transition technologique
 À terme, l'application migrera vers un **backend personnalisé** pour une autonomie complète :
 
 **Stack technique envisagée :**

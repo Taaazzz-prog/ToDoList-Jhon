@@ -130,7 +130,7 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 
 ## 👨‍💻 Auteur
 
-**Jhon** - [Taaazzz-prog](https://github.com/Taaazzz-prog)
+**Taaazzz-prog** - [Taaazzz-prog](https://github.com/Taaazzz-prog)
 
 ---
 

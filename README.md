@@ -1,137 +1,216 @@
-# ToDoList Angular - Jhon
+# 📋 TodoList Angular
 
-Une application de gestion de tâches moderne et intuitive développée avec Angular et connectée à l'API https://todof.woopear.fr/
+Une application moderne de gestion de tâches développée avec Angular 17, connectée à une API REST et utilisant Angular Material pour l'interface utilisateur.
 
-![ToDoList Preview](https://via.placeholder.com/600x400/4f46e5/ffffff?text=Angular+ToDoList)
+## 🎯 Objectif de l'application
 
-## 🚀 Fonctionnalités
+Cette application TodoList permet aux utilisateurs de gérer efficacement leurs tâches quotidiennes avec une interface intuitive et responsive. Elle offre toutes les fonctionnalités essentielles d'une application de gestion de tâches moderne.
 
-- 🔐 **Authentification utilisateur** - Connexion sécurisée avec JWT
-- ✅ **Gestion des tâches** - Créer, modifier, supprimer des tâches
-- � **Statut des tâches** - Marquer comme terminé/actif
-- 🔍 **Filtrage avancé** - Voir toutes, actives ou terminées
-- � **Statistiques en temps réel** - Compteurs de tâches
-- 💾 **Persistance serveur** - Données stockées sur l'API
-- 📱 **Design responsive** - Material Design adaptatif
-- 🎨 **Interface moderne** - Angular Material UI
+## ✨ Fonctionnalités principales
+
+### 🔐 Authentification
+- **Connexion sécurisée** avec email et mot de passe
+- **Inscription** de nouveaux utilisateurs
+- **Gestion JWT** pour l'authentification persistante
+- **Déconnexion automatique** en cas d'expiration du token
+
+### 📝 Gestion des tâches
+- **Création** de nouvelles tâches
+- **Modification** du libellé des tâches existantes
+- **Marquage** des tâches comme terminées/actives
+- **Suppression individuelle** des tâches
+- **Suppression en masse** des tâches terminées
+
+### 🔍 Filtrage et organisation
+- **Filtres intelligents** : Toutes, Actives, Terminées
+- **Statistiques en temps réel** : compteurs dynamiques
+- **Interface responsive** adaptée à tous les écrans
+
+### 🎨 Interface utilisateur
+- **Design moderne** avec Angular Material
+- **Animations fluides** et transitions
+- **Messages de feedback** (succès, erreurs, informations)
+- **États de chargement** avec indicateurs visuels
+- **Bouton flottant** pour l'ajout rapide de tâches
 
 ## 🛠️ Technologies utilisées
 
-- **Angular 17** - Framework frontend moderne
-- **TypeScript** - Typage statique et fonctionnalités ES6+
-- **Angular Material** - Composants UI Material Design
+### Frontend
+- **Angular 17** - Framework principal
+- **TypeScript** - Langage de développement
+- **Angular Material** - Composants UI
 - **RxJS** - Programmation réactive
-- **HTTP Client** - Communication avec l'API REST
-- **JWT** - Authentification par tokens
+- **SCSS** - Styles avancés
 
-## 🎯 Comment utiliser
+### Backend & API
+- **API REST** : `https://todof.woopear.fr/api/v1`
+- **Authentification JWT**
+- **Endpoints CRUD complets**
 
-### 🔑 Authentification
-1. **Se connecter** : Utilisez les identifiants fournis
-   - Email : `string@gmail.com` 
-   - Mot de passe : `string`
+### Outils de développement
+- **Angular CLI** - Outils de développement
+- **Proxy CORS** - Configuration pour le développement local
+- **Git** - Gestion de versions
 
-### 📝 Gestion des tâches
-1. **Créer une tâche** : Cliquez sur le bouton `+` flottant ou utilisez le bouton "Créer votre première tâche"
-2. **Modifier une tâche** : Cliquez sur l'icône crayon à côté de la tâche
-3. **Marquer comme terminée** : Utilisez la case à cocher
-4. **Supprimer une tâche** : Cliquez sur l'icône poubelle
-5. **Filtrer les tâches** : Utilisez les onglets "Toutes", "Actives", "Terminées"
-6. **Supprimer les terminées** : Utilisez le bouton "Supprimer les tâches terminées"
+## 🚀 Fonctionnalités avancées implémentées
 
-## 🚀 Installation et lancement
+### Suppression en masse optimisée
+- **Stratégie hybride** : utilise l'endpoint officiel `POST /task/delete/user`
+- **Fallback automatique** vers suppressions individuelles si nécessaire
+- **Gestion d'erreurs robuste** avec continuité d'exécution
+- **Logs détaillés** pour le debugging
+
+### Gestion d'état réactive
+- **Mise à jour en temps réel** de l'interface
+- **Synchronisation automatique** avec l'API
+- **Gestion des erreurs réseau** (CORS, timeouts)
+
+### Interface utilisateur avancée
+- **Bouton conditionnel** de suppression en masse
+- **Messages contextuels** selon les actions
+- **États vides** avec suggestions d'actions
+- **Tooltips informatifs** sur les actions
+
+## 📋 Endpoints API implémentés
+
+| Endpoint | Méthode | Fonction | Statut |
+|----------|---------|----------|---------|
+| `GET /task` | ✅ | Récupération des tâches | Complet |
+| `POST /task` | ✅ | Création de tâche | Complet |
+| `PUT /task/{id}/done/user` | ✅ | Basculer statut terminé | Complet |
+| `PUT /task/{id}/label/user` | ✅ | Modifier libellé | Complet |
+| `DELETE /task/{id}/user` | ✅ | Suppression individuelle | Complet |
+| `POST /task/delete/user` | ✅ | Suppression en masse | Complet |
+
+## 🏃‍♂️ Démarrage rapide
 
 ### Prérequis
 - Node.js (version 18 ou supérieure)
 - npm ou yarn
-- Angular CLI (`npm install -g @angular/cli`)
+- Angular CLI
 
-### Installation
+### Installation et lancement
 ```bash
-# Clonez le repository
+# Cloner le repository
 git clone https://github.com/Taaazzz-prog/ToDoList-Jhon.git
-
-# Naviguez dans le dossier
 cd ToDoList-Jhon
 
-# Installez les dépendances
+# Installer les dépendances
 npm install
 
-# Lancez l'application en mode développement
-ng serve
+# Lancer en mode développement avec proxy CORS
+npm run start
 
-# Ouvrez http://localhost:4200 dans votre navigateur
+# Ou avec Angular CLI
+ng serve --proxy-config proxy.conf.json
 ```
 
-### Production
-```bash
-# Construire pour la production
-ng build --prod
+L'application sera accessible sur `http://localhost:4200`
 
-# Les fichiers seront dans le dossier dist/
-```
+### Comptes de test
+Pour tester l'application, vous pouvez utiliser :
+- **Email** : `popeye@suce.fr`
+- **Mot de passe** : `147258`
 
 ## 📁 Structure du projet
 
 ```
-todolist-exo/
-├── src/
-│   ├── app/
-│   │   ├── components/
-│   │   │   ├── login/              # Composant de connexion
-│   │   │   ├── header/             # En-tête avec menu utilisateur
-│   │   │   ├── task-list/          # Liste et gestion des tâches
-│   │   │   └── task-form/          # Formulaire de création/édition
-│   │   ├── services/
-│   │   │   ├── auth.service.ts     # Service d'authentification
-│   │   │   └── task.service.ts     # Service de gestion des tâches
-│   │   ├── models/
-│   │   │   ├── user.model.ts       # Modèles utilisateur
-│   │   │   └── task.model.ts       # Modèles de tâches
-│   │   ├── guards/
-│   │   │   └── auth.guard.ts       # Protection des routes
-│   │   ├── app-routing.module.ts   # Configuration des routes
-│   │   ├── app.module.ts           # Module principal
-│   │   └── app.component.ts        # Composant racine
-│   ├── index.html                  # Page HTML principale
-│   ├── main.ts                     # Point d'entrée Angular
-│   └── styles.scss                 # Styles globaux
-├── angular.json                    # Configuration Angular
-├── package.json                    # Dépendances npm
-├── tsconfig.json                   # Configuration TypeScript
-└── README.md
+src/
+├── app/
+│   ├── components/           # Composants Angular
+│   │   ├── login/           # Connexion/Inscription
+│   │   ├── task-list/       # Liste des tâches
+│   │   ├── task-form/       # Formulaire de tâche
+│   │   └── header/          # En-tête de navigation
+│   ├── services/            # Services Angular
+│   │   ├── auth.service.ts  # Authentification
+│   │   └── task.service.ts  # Gestion des tâches
+│   ├── models/              # Modèles TypeScript
+│   │   ├── user.model.ts    # Modèle utilisateur
+│   │   └── task.model.ts    # Modèle tâche
+│   ├── guards/              # Guards de routage
+│   │   └── auth.guard.ts    # Protection des routes
+│   └── app-routing.module.ts # Configuration des routes
+└── assets/                  # Ressources statiques
 ```
 
-## 🔧 API Integration
+## 🎨 Captures d'écran
 
-L'application utilise l'API REST : `https://todof.woopear.fr/`
+### Interface principale
+- **Dashboard** avec statistiques en temps réel
+- **Filtres par onglets** pour organiser les tâches
+- **Actions contextuelles** sur chaque tâche
 
-### Endpoints utilisés :
-- `POST /auth/login` - Authentification
-- `GET /tasks` - Récupérer les tâches
-- `POST /tasks` - Créer une tâche
-- `PUT /tasks/{id}` - Modifier une tâche
-- `DELETE /tasks/{id}` - Supprimer une tâche
-- `DELETE /tasks/completed` - Supprimer les tâches terminées
+### Fonctionnalités clés
+- **Suppression en masse** des tâches terminées
+- **Messages de confirmation** pour toutes les actions
+- **Interface responsive** pour mobile et desktop
 
-## 🤝 Contribution
+## 🔧 Configuration
 
-Les contributions sont les bienvenues ! Pour contribuer :
+### Proxy CORS (développement local)
+Le fichier `proxy.conf.json` configure le proxy pour éviter les problèmes CORS :
+```json
+{
+  "/api/*": {
+    "target": "https://todof.woopear.fr",
+    "secure": true,
+    "changeOrigin": true
+  }
+}
+```
 
-1. Forkez le projet
-2. Créez une branche pour votre fonctionnalité (`git checkout -b feature/AmazingFeature`)
-3. Committez vos changements (`git commit -m 'Add some AmazingFeature'`)
-4. Poussez vers la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrez une Pull Request
+### Variables d'environnement
+L'application détecte automatiquement l'environnement :
+- **Développement** : utilise le proxy local
+- **Production** : appelle directement l'API
 
-## 📝 Licence
+## 📈 Évolutions futures possibles
 
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+### 🔮 Fonctionnalités utilisateur avancées
+- **Notifications push** pour les rappels
+- **Partage de tâches** entre utilisateurs
+- **Catégories** et **étiquettes** pour organiser
+- **Recherche avancée** dans les tâches
+- **Export/Import** des données
+- **Mode hors-ligne** avec synchronisation
 
-## 👨‍💻 Auteur
+### 👤 Endpoints utilisateur à implémenter
 
-**Taaazzz-prog** - [Taaazzz-prog](https://github.com/Taaazzz-prog)
+| Endpoint | Méthode | Fonction | Priorité |
+|----------|---------|----------|----------|
+| `DELETE /user` | 🔜 | Suppression du compte utilisateur | Haute |
+| `POST /user/login` | 🔜 | Authentification (alternative) | Moyenne |
+| `GET /user/profil` | 🔜 | Récupération du profil utilisateur | Haute |
+| `POST /user/register` | 🔜 | Inscription (alternative) | Moyenne |
+
+### 🛡️ Endpoints administrateur (futures)
+
+| Endpoint | Méthode | Fonction | Complexité |
+|----------|---------|----------|------------|
+| `DELETE /task/delete/all` | 🔜 | Suppression de toutes les tâches (admin) | Élevée |
+| `POST /task/delete/tasks` | 🔜 | Suppression de tâches spécifiques (admin) | Moyenne |
+| `POST /user/users` | 🔜 | Suppression d'utilisateurs spécifiques (admin) | Élevée |
+| `DELETE /user/users/all` | 🔜 | Suppression de tous les utilisateurs (admin) | Critique |
+
+### 🎯 Prochaines étapes de développement
+
+#### Phase 1 - Gestion du profil utilisateur
+1. **Page profil** avec informations personnelles
+2. **Modification** des données utilisateur
+3. **Suppression de compte** avec confirmation
+4. **Statistiques personnelles** d'utilisation
+
+#### Phase 2 - Fonctionnalités avancées
+1. **Système de rôles** (utilisateur/admin)
+2. **Interface d'administration** pour la gestion
+3. **Logs d'activité** et audit trail
+4. **Sauvegarde/Restauration** des données
+
+## 👨‍💻 Développeur
+
+**Taaazzz-prog** - Développeur principal
 
 ---
 
-⭐ N'hésitez pas à donner une étoile si ce projet vous a plu !
+*Application développée avec ❤️ en utilisant Angular et les meilleures pratiques de développement moderne.*

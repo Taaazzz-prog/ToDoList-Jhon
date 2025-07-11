@@ -130,6 +130,11 @@ auth.json
 # =======================
 # 🎯 Project Specific
 # =======================
+# Composants de test et debug - RESTER EN LOCAL UNIQUEMENT
+src/app/components/test/
+src/app/components/simple-test/
+src/app/components/mass-register-test/
+
 # Fichiers de test et debug - RESTER EN LOCAL UNIQUEMENT
 api-test.html
 test-*.html

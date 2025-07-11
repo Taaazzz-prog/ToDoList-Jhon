@@ -1,15 +1,13 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
 import { TaskListComponent } from './components/task-list/task-list.component';
-import { MassRegisterTestComponent } from './components/mass-register-test/mass-register-test.component';
 import { AuthGuard } from './guards/auth.guard';
 
-console.log('🛣️ app.routes.ts: Configuration des routes avec LoginComponent, TaskListComponent et MassRegisterTestComponent');
+console.log('🛣️ app.routes.ts: Configuration des routes avec LoginComponent et TaskListComponent');
 
 export const routes: Routes = [
   { path: '', redirectTo: '/tasks', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
-  { path: 'test-register', component: MassRegisterTestComponent },
   { 
     path: 'tasks', 
     component: TaskListComponent,

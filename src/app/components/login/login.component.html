@@ -1,0 +1,175 @@
+<div class="login-container">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>task_alt</mat-icon>
+        TodoList Angular
+      </mat-card-title>
+      <mat-card-subtitle>Gérez vos tâches efficacement</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-tab-group [(selectedIndex)]="selectedTabIndex">
+        <!-- Onglet Connexion -->
+        <mat-tab label="Connexion">
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Email</mat-label>
+              <input
+                matInput
+                type="email"
+                formControlName="email"
+                placeholder="votre@email.com"
+                autocomplete="email"
+              >
+              <mat-icon matSuffix>email</mat-icon>
+              <mat-error *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+                {{ getErrorMessage('email') }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Mot de passe</mat-label>
+              <input
+                matInput
+                [type]="hidePassword ? 'password' : 'text'"
+                formControlName="password"
+                placeholder="Votre mot de passe"
+                autocomplete="current-password"
+              >
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="hidePassword = !hidePassword"
+                [attr.aria-label]="'Masquer le mot de passe'"
+                [attr.aria-pressed]="hidePassword"
+              >
+                <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+                {{ getErrorMessage('password') }}
+              </mat-error>
+            </mat-form-field>
+
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              class="action-button"
+              [disabled]="isLoading"
+            >
+              <mat-icon *ngIf="isLoading">hourglass_empty</mat-icon>
+              <span *ngIf="!isLoading">Se connecter</span>
+              <span *ngIf="isLoading">Connexion...</span>
+            </button>
+          </form>
+        </mat-tab>
+
+        <!-- Onglet Inscription -->
+        <mat-tab label="Inscription">
+          <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="login-form">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Email</mat-label>
+              <input
+                matInput
+                type="email"
+                formControlName="email"
+                placeholder="votre@email.com"
+                autocomplete="email"
+              >
+              <mat-icon matSuffix>email</mat-icon>
+              <mat-error *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+                {{ getRegisterErrorMessage('email') }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Nom complet</mat-label>
+              <input
+                matInput
+                type="text"
+                formControlName="username"
+                placeholder="Votre nom complet"
+                autocomplete="name"
+              >
+              <mat-icon matSuffix>person</mat-icon>
+              <mat-error *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched">
+                {{ getRegisterErrorMessage('username') }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Mot de passe</mat-label>
+              <input
+                matInput
+                [type]="hidePassword ? 'password' : 'text'"
+                formControlName="password"
+                placeholder="Votre mot de passe"
+                autocomplete="new-password"
+              >
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="hidePassword = !hidePassword"
+                [attr.aria-label]="'Masquer le mot de passe'"
+                [attr.aria-pressed]="hidePassword"
+              >
+                <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+                {{ getRegisterErrorMessage('password') }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Confirmer le mot de passe</mat-label>
+              <input
+                matInput
+                [type]="hideConfirmPassword ? 'password' : 'text'"
+                formControlName="confirmPassword"
+                placeholder="Confirmez votre mot de passe"
+                autocomplete="new-password"
+              >
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="hideConfirmPassword = !hideConfirmPassword"
+                [attr.aria-label]="'Masquer le mot de passe'"
+                [attr.aria-pressed]="hideConfirmPassword"
+              >
+                <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
+                {{ getRegisterErrorMessage('confirmPassword') }}
+              </mat-error>
+            </mat-form-field>
+
+            <button
+              mat-raised-button
+              color="accent"
+              type="submit"
+              class="action-button"
+              [disabled]="isLoading"
+            >
+              <mat-icon *ngIf="isLoading">hourglass_empty</mat-icon>
+              <span *ngIf="!isLoading">Créer un compte</span>
+              <span *ngIf="isLoading">Création...</span>
+            </button>
+          </form>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <div style="width: 100%; text-align: center;">
+        <p class="login-info">
+          <mat-icon class="info-icon">info</mat-icon>
+          Connectez-vous ou créez un nouveau compte pour commencer
+        </p>
+      </div>
+    </mat-card-actions>
+  </mat-card>
+</div>

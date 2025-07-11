@@ -1,0 +1,60 @@
+.task-form-container {
+  min-width: 450px;
+  max-width: 600px;
+}
+
+h2[mat-dialog-title] {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 20px 0;
+  color: #1976d2;
+  font-weight: 500;
+}
+
+h2[mat-dialog-title] mat-icon {
+  font-size: 1.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 8px 0;
+}
+
+.form-field {
+  width: 100%;
+}
+
+mat-dialog-actions {
+  padding: 20px 0 0 0;
+  margin: 0;
+}
+
+mat-dialog-actions button {
+  margin-left: 8px;
+}
+
+.task-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .task-form-container {
+    min-width: 300px;
+    max-width: 90vw;
+  }
+  
+  h2[mat-dialog-title] {
+    font-size: 1.2rem;
+  }
+  
+  .form-field {
+    margin-bottom: 16px;
+  }
+}

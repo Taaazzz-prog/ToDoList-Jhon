@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>TodoList Angular - Dev Mode</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Mode développement - CSP relaxé -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    /* Styles de base pour éviter FOUC */
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: #fafafa;
+    }
+    app-root {
+      display: block;
+      min-height: 100vh;
+    }
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-size: 18px;
+      color: #666;
+    }
+  </style>
+</head>
+<body class="mat-typography">
+  <app-root>
+    <div class="loading">
+      <div>Chargement de l'application TodoList...</div>
+    </div>
+  </app-root>
+</body>
+</html>

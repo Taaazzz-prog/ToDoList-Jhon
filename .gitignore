@@ -1,0 +1,214 @@
+# 🚫 GitIgnore - TodoList Angular Project
+# Généré le 11 juillet 2025
+
+# =======================
+# 📦 Node.js & NPM
+# =======================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+.pnpm-debug.log*
+
+# =======================
+# 🏗️ Build & Distribution
+# =======================
+/dist/
+/dist-dev/
+/tmp/
+/out-tsc/
+bazel-out
+
+# =======================
+# 🔧 Angular Specific
+# =======================
+.angular/
+.ng_build/
+.ng_pkg_build/
+
+# =======================
+# 🧪 Tests & Coverage
+# =======================
+/coverage/
+.nyc_output/
+*.lcov
+*.tgz
+
+# =======================
+# 📝 IDE & Editors
+# =======================
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+.vscode/tasks.json
+.idea/
+*.swp
+*.swo
+*~
+
+# =======================
+# 🖥️ OS Generated
+# =======================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# =======================
+# 📊 Logs & Debug
+# =======================
+*.log
+logs/
+*.pid
+*.seed
+*.pid.lock
+.grunt
+.eslintcache
+.stylelintcache
+
+# =======================
+# 🌍 Environment & Config
+# =======================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+.environment
+config.local.js
+
+# =======================
+# 🔐 Secrets & Credentials
+# =======================
+*.key
+*.pem
+*.p12
+*.pfx
+secrets.json
+credentials.json
+auth.json
+
+# =======================
+# 🚀 Deployment
+# =======================
+.firebase/
+.vercel/
+.netlify/
+.serverless/
+
+# =======================
+# 📱 Mobile (si PWA)
+# =======================
+/platforms/
+/plugins/
+/www/
+
+# =======================
+# 🧹 Temporary & Cache
+# =======================
+.tmp/
+.sass-cache/
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist/
+
+# =======================
+# 📊 Analytics & Monitoring
+# =======================
+.lighthouse/
+.size-limit/
+
+# =======================
+# 🎯 Project Specific
+# =======================
+# Fichiers de test et debug - RESTER EN LOCAL UNIQUEMENT
+api-test.html
+test-*.html
+debug-*.html
+mass-register-test.html
+test-connection.html
+test-direct.html
+test-login-credentials.html
+test-logout.html
+test-register.html
+test-api-corrected.html
+
+# Scripts de développement et test - RESTER EN LOCAL UNIQUEMENT
+*.sh
+start-test-server.sh
+start-server.sh
+test-*.sh
+test-credentials.sh
+launch-app.sh
+
+# Documentation de développement - RESTER EN LOCAL UNIQUEMENT
+*.md
+!README.md
+ROADMAP-EVOLUTIONS.md
+GITIGNORE-EXPLANATION.md
+INSTALLATION.md
+SOLUTION-CORS.md
+SOLUTION-CORS-COMPLETE.md
+CORRECTIONS-SUMMARY.md
+LOGS-DEBUG.md
+DIAGNOSTIC.md
+TESTS.md
+projet.ms
+
+# Scripts JavaScript de test - RESTER EN LOCAL UNIQUEMENT
+script.js
+
+# Fichiers de style temporaires - RESTER EN LOCAL UNIQUEMENT
+style.css
+
+# Fichiers HTML de développement - RESTER EN LOCAL UNIQUEMENT
+index.html
+debug-console.html
+debug-login-structure.html
+
+# Logs de debug du projet
+*-debug.log
+
+# =======================
+# 🔄 Backup & Archives
+# =======================
+*.backup
+*.bak
+*.orig
+*.rej
+*.zip
+*.tar.gz
+*.7z
+
+# =======================
+# 📈 Performance & Profiling
+# =======================
+.profile/
+*.cpuprofile
+*.heapsnapshot
+
+# =======================
+# 🎨 Design & Assets (optionnel)
+# =======================
+*.psd
+*.ai
+*.sketch
+*.fig
+design/
+mockups/
+
+# =======================
+# 📋 Todo & Notes (optionnel)
+# =======================
+TODO.md
+NOTES.md
+DRAFT.md

@@ -1,0 +1,28 @@
+<mat-toolbar color="primary" class="app-header">
+  <mat-toolbar-row>
+    <span class="app-title">
+      <mat-icon>task_alt</mat-icon>
+      TodoList
+    </span>
+    
+    <span class="spacer"></span>
+    
+    <div class="user-menu" *ngIf="currentUser">
+      <span class="user-info">
+        <mat-icon>account_circle</mat-icon>
+        {{ currentUser.email }}
+      </span>
+      
+      <button mat-icon-button [matMenuTriggerFor]="userMenu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Se déconnecter</span>
+        </button>
+      </mat-menu>
+    </div>
+  </mat-toolbar-row>
+</mat-toolbar>

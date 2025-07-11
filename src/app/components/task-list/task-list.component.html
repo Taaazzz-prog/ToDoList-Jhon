@@ -1,0 +1,158 @@
+<div class="task-list-container">
+  <!-- Header avec navigation et déconnexion -->
+  <div class="app-header">
+    <mat-toolbar color="primary">
+      <div class="header-content">
+        <div class="header-left">
+          <mat-icon>task_alt</mat-icon>
+          <span class="app-title">TodoList Angular</span>
+        </div>
+        <div class="header-right">
+          <span class="user-info">{{ getCurrentUser()?.email }}</span>
+          <button 
+            mat-raised-button 
+            color="accent" 
+            (click)="logout()"
+            class="logout-button">
+            <mat-icon>logout</mat-icon>
+            Se déconnecter
+          </button>
+        </div>
+      </div>
+    </mat-toolbar>
+  </div>
+
+  <!-- En-tête avec filtres et statistiques -->
+  <div class="task-header">
+    <div class="task-stats">
+      <mat-card class="stats-card">
+        <div class="stats-content">
+          <div class="stat-item">
+            <span class="stat-number">{{ getTasksCount().total }}</span>
+            <span class="stat-label">Total</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getTasksCount().active }}</span>
+            <span class="stat-label">Actives</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getTasksCount().completed }}</span>
+            <span class="stat-label">Terminées</span>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Filtres -->
+    <div class="task-filters">
+      <mat-tab-group [(selectedIndex)]="currentFilterIndex" (selectedTabChange)="setFilter($event.index)">
+        <mat-tab label="Toutes">
+          <ng-template mat-tab-label>
+            <mat-icon>list</mat-icon>
+            Toutes
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="Actives">
+          <ng-template mat-tab-label>
+            <mat-icon>schedule</mat-icon>
+            Actives
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="Terminées">
+          <ng-template mat-tab-label>
+            <mat-icon>check_circle</mat-icon>
+            Terminées
+          </ng-template>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+
+  <!-- Indicateur de chargement -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <p>Chargement des tâches...</p>
+  </div>
+
+  <!-- Liste des tâches -->
+  <div *ngIf="!isLoading" class="tasks-content">
+    <!-- État vide -->
+    <div *ngIf="filteredTasks.length === 0" class="empty-state">
+      <mat-icon>task</mat-icon>
+      <h3>{{ getEmptyStateMessage() }}</h3>
+      <p>{{ getEmptyStateSubtitle() }}</p>
+      <button mat-raised-button color="primary" (click)="openTaskDialog()">
+        <mat-icon>add</mat-icon>
+        Créer votre première tâche
+      </button>
+    </div>
+
+    <!-- Liste des tâches -->
+    <div *ngIf="filteredTasks.length > 0" class="tasks-list">
+      <mat-card *ngFor="let task of filteredTasks; trackBy: trackByTaskId" class="task-card">
+        <mat-card-content class="task-content">
+          <div class="task-checkbox">
+            <mat-checkbox
+              [checked]="task.done"
+              (change)="toggleTaskCompletion(task)"
+              [color]="'primary'"
+            ></mat-checkbox>
+          </div>
+
+          <div class="task-info" [class.completed]="task.done">
+            <h4 class="task-title">{{ task.label }}</h4>
+            <div class="task-meta">
+              <span class="task-date">
+                <mat-icon>schedule</mat-icon>
+                {{ formatDate(task.createdAt) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="task-actions">
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="openTaskDialog(task)"
+              [disabled]="task.done"
+              matTooltip="Modifier"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="deleteTask(task)"
+              matTooltip="Supprimer"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Actions en bas -->
+    <div *ngIf="getTasksCount().completed > 0" class="bottom-actions">
+      <button
+        mat-stroked-button
+        color="warn"
+        (click)="clearCompletedTasks()"
+      >
+        <mat-icon>clear_all</mat-icon>
+        Supprimer les tâches terminées ({{ getTasksCount().completed }})
+      </button>
+    </div>
+  </div>
+
+  <!-- Bouton flottant pour ajouter une tâche -->
+  <button
+    mat-fab
+    color="primary"
+    class="fab-add"
+    (click)="openTaskDialog()"
+    matTooltip="Ajouter une tâche"
+  >
+    <mat-icon>add</mat-icon>
+  </button>
+</div>

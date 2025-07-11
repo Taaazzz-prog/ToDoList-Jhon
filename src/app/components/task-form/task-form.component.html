@@ -1,0 +1,47 @@
+<div class="task-form-container">
+  <h2 mat-dialog-title>
+    <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+    {{ isEditMode ? 'Modifier la tâche' : 'Nouvelle tâche' }}
+  </h2>
+
+  <mat-dialog-content>
+    <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="task-form">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Titre de la tâche</mat-label>
+        <input
+          matInput
+          formControlName="label"
+          placeholder="Entrez le titre de la tâche"
+          maxlength="100"
+          required
+        >
+        <mat-hint align="end">{{ taskForm.get('label')?.value?.length || 0 }}/100</mat-hint>
+        <mat-error *ngIf="taskForm.get('label')?.invalid && taskForm.get('label')?.touched">
+          {{ getErrorMessage('label') }}
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button
+      mat-button
+      type="button"
+      (click)="onCancel()"
+      [disabled]="isLoading"
+    >
+      Annuler
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      (click)="onSubmit()"
+      [disabled]="isLoading || taskForm.invalid"
+    >
+      <mat-icon *ngIf="isLoading">hourglass_empty</mat-icon>
+      <span *ngIf="!isLoading">{{ isEditMode ? 'Modifier' : 'Créer' }}</span>
+      <span *ngIf="isLoading">{{ isEditMode ? 'Modification...' : 'Création...' }}</span>
+    </button>
+  </mat-dialog-actions>
+</div>

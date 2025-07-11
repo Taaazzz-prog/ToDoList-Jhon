@@ -43,25 +43,47 @@
       </mat-card>
     </div>
 
+    <!-- Barre de recherche -->
+    <div class="search-section">
+      <mat-form-field class="search-field" appearance="outline">
+        <mat-label>Rechercher une tâche</mat-label>
+        <input 
+          matInput 
+          [(ngModel)]="searchQuery"
+          (input)="onSearchChange(searchQuery)"
+          placeholder="Tapez pour rechercher..."
+          autocomplete="off">
+        <mat-icon matSuffix>search</mat-icon>
+        <button 
+          mat-icon-button 
+          matSuffix 
+          *ngIf="searchQuery"
+          (click)="clearSearch()"
+          matTooltip="Effacer la recherche">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
     <!-- Filtres -->
     <div class="task-filters">
       <mat-tab-group [(selectedIndex)]="currentFilterIndex" (selectedTabChange)="setFilter($event.index)">
         <mat-tab label="Toutes">
           <ng-template mat-tab-label>
             <mat-icon>list</mat-icon>
-            Toutes
+            Toutes ({{ getTasksCount().total }})
           </ng-template>
         </mat-tab>
         <mat-tab label="Actives">
           <ng-template mat-tab-label>
             <mat-icon>schedule</mat-icon>
-            Actives
+            Actives ({{ getTasksCount().active }})
           </ng-template>
         </mat-tab>
         <mat-tab label="Terminées">
           <ng-template mat-tab-label>
             <mat-icon>check_circle</mat-icon>
-            Terminées
+            Terminées ({{ getTasksCount().completed }})
           </ng-template>
         </mat-tab>
       </mat-tab-group>

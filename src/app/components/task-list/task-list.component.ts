@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,6 +11,8 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { TaskService } from '../../services/task.service';
 import { AuthService } from '../../services/auth.service';
 import { Task, TaskFilter } from '../../models/task.model';
@@ -22,6 +25,7 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
@@ -31,7 +35,9 @@ import { Router } from '@angular/router';
     MatDialogModule,
     MatSnackBarModule,
     MatTooltipModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MatInputModule,
+    MatFormFieldModule
   ],
   templateUrl: './task-list.component.html',
   styleUrls: ['./task-list.component.scss']
@@ -41,6 +47,7 @@ export class TaskListComponent implements OnInit {
   filteredTasks: Task[] = [];
   currentFilter: TaskFilter = TaskFilter.ALL;
   currentFilterIndex: number = 0; // Index pour le mat-tab-group
+  searchQuery: string = ''; // Nouvelle propriété pour la recherche
   isLoading = false;
   TaskFilter = TaskFilter; // Pour utiliser l'enum dans le template
 
@@ -78,16 +85,46 @@ export class TaskListComponent implements OnInit {
   }
 
   applyFilter(): void {
+    let filtered = [...this.tasks];
+    
+    // Appliquer le filtre par statut
     switch (this.currentFilter) {
       case TaskFilter.ACTIVE:
-        this.filteredTasks = this.tasks.filter(task => !task.done);
+        filtered = filtered.filter(task => !task.done);
         break;
       case TaskFilter.COMPLETED:
-        this.filteredTasks = this.tasks.filter(task => task.done);
+        filtered = filtered.filter(task => task.done);
         break;
       default:
-        this.filteredTasks = [...this.tasks];
+        // TaskFilter.ALL - garder toutes les tâches
+        break;
     }
+    
+    // Appliquer le filtre de recherche
+    if (this.searchQuery.trim()) {
+      const query = this.searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(task => 
+        task.label.toLowerCase().includes(query)
+      );
+    }
+    
+    this.filteredTasks = filtered;
+  }
+
+  /**
+   * Méthode appelée lors de la saisie dans la barre de recherche
+   */
+  onSearchChange(searchQuery: string): void {
+    this.searchQuery = searchQuery;
+    this.applyFilter();
+  }
+
+  /**
+   * Effacer la recherche
+   */
+  clearSearch(): void {
+    this.searchQuery = '';
+    this.applyFilter();
   }
 
   setFilter(filter: TaskFilter | number): void {
@@ -238,6 +275,10 @@ export class TaskListComponent implements OnInit {
   }
 
   getEmptyStateMessage(): string {
+    if (this.searchQuery.trim()) {
+      return `Aucun résultat pour "${this.searchQuery}"`;
+    }
+    
     switch (this.currentFilter) {
       case TaskFilter.ACTIVE:
         return 'Aucune tâche active';
@@ -249,6 +290,10 @@ export class TaskListComponent implements OnInit {
   }
 
   getEmptyStateSubtitle(): string {
+    if (this.searchQuery.trim()) {
+      return 'Essayez de modifier votre recherche ou créez une nouvelle tâche.';
+    }
+    
     switch (this.currentFilter) {
       case TaskFilter.ACTIVE:
         return 'Toutes vos tâches sont terminées !';

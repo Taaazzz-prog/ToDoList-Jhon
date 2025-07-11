@@ -255,6 +255,54 @@
   border-left-color: #4caf50;
 }
 
+/* Styles pour la section de recherche */
+.search-section {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.search-field {
+  width: 100%;
+  max-width: 400px;
+  
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none; // Cache le hint/error space
+  }
+  
+  .mat-mdc-text-field-wrapper {
+    border-radius: 25px;
+  }
+  
+  input {
+    font-size: 16px;
+  }
+  
+  .mat-icon {
+    color: rgba(0, 0, 0, 0.54);
+  }
+}
+
+// Amélioration des onglets de filtres
+.task-filters {
+  margin: 16px 0;
+  
+  .mat-mdc-tab-group {
+    .mat-mdc-tab-labels {
+      border-radius: 8px;
+      background-color: #f5f5f5;
+    }
+    
+    .mat-mdc-tab-label {
+      min-width: 120px;
+      
+      .mat-icon {
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .task-list-container {

@@ -1,0 +1,226 @@
+<div class="profile-container">
+  
+  <!-- Header avec bouton retour -->
+  <div class="profile-header">
+    <button mat-icon-button (click)="goBackToTasks()" class="back-button">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>Mon Profil</h1>
+    <button mat-icon-button (click)="refreshData()" [disabled]="isLoading || isLoadingStats" 
+            matTooltip="Actualiser les données">
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+
+  <!-- Contenu principal -->
+  <div class="profile-content">
+    
+    <!-- Carte Informations Utilisateur -->
+    <mat-card class="user-info-card">
+      <mat-card-header>
+        <div mat-card-avatar class="avatar">
+          <mat-icon>person</mat-icon>
+        </div>
+        <mat-card-title>Informations personnelles</mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div *ngIf="isLoading" class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Chargement du profil...</p>
+        </div>
+
+        <div *ngIf="!isLoading && user" class="user-details">
+          <div class="info-row">
+            <mat-icon>email</mat-icon>
+            <span class="label">Email :</span>
+            <span class="value">{{ user.email }}</span>
+          </div>
+          
+          <div class="info-row" *ngIf="user.username">
+            <mat-icon>person</mat-icon>
+            <span class="label">Nom d'utilisateur :</span>
+            <span class="value">{{ user.username }}</span>
+          </div>
+          
+          <div class="info-row" *ngIf="user.role">
+            <mat-icon>admin_panel_settings</mat-icon>
+            <span class="label">Rôle :</span>
+            <mat-chip [color]="user.role === 'admin' ? 'primary' : 'accent'" selected>
+              {{ user.role }}
+            </mat-chip>
+          </div>
+          
+          <div class="info-row">
+            <mat-icon>event</mat-icon>
+            <span class="label">Membre depuis :</span>
+            <span class="value">{{ formatJoinDate(user.created_at) }}</span>
+            <span class="sub-value">({{ getDaysSinceJoin() }} jours)</span>
+          </div>
+        </div>
+
+        <div *ngIf="!isLoading && !user" class="error-state">
+          <mat-icon>error</mat-icon>
+          <p>Impossible de charger les informations du profil</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Carte Statistiques -->
+    <mat-card class="stats-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>bar_chart</mat-icon>
+          Statistiques de productivité
+        </mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div *ngIf="isLoadingStats" class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Chargement des statistiques...</p>
+        </div>
+
+        <div *ngIf="!isLoadingStats" class="stats-content">
+          
+          <!-- Niveau de productivité -->
+          <div class="productivity-level">
+            <h3>Niveau de productivité</h3>
+            <div class="level-badge">
+              <mat-chip [color]="getProductivityLevel().color" selected>
+                <mat-icon>{{ getProductivityLevel().icon }}</mat-icon>
+                {{ getProductivityLevel().level }}
+              </mat-chip>
+              <span class="percentage">{{ getCompletionRate() }}% de réussite</span>
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- Statistiques générales -->
+          <div class="stats-section">
+            <h4>Vue d'ensemble</h4>
+            <div class="stats-grid">
+              <div class="stat-item total">
+                <mat-icon>assignment</mat-icon>
+                <div class="stat-details">
+                  <span class="stat-number">{{ stats.total }}</span>
+                  <span class="stat-label">Tâches créées</span>
+                </div>
+              </div>
+              
+              <div class="stat-item completed">
+                <mat-icon>check_circle</mat-icon>
+                <div class="stat-details">
+                  <span class="stat-number">{{ stats.completed }}</span>
+                  <span class="stat-label">Terminées</span>
+                </div>
+              </div>
+              
+              <div class="stat-item active">
+                <mat-icon>pending</mat-icon>
+                <div class="stat-details">
+                  <span class="stat-number">{{ stats.active }}</span>
+                  <span class="stat-label">En cours</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- Statistiques récentes -->
+          <div class="stats-section">
+            <h4>Activité récente</h4>
+            <div class="stats-grid">
+              <div class="stat-item today">
+                <mat-icon>today</mat-icon>
+                <div class="stat-details">
+                  <span class="stat-number">{{ stats.createdToday }}</span>
+                  <span class="stat-label">Créées aujourd'hui</span>
+                </div>
+              </div>
+              
+              <div class="stat-item today-completed">
+                <mat-icon>done_today</mat-icon>
+                <div class="stat-details">
+                  <span class="stat-number">{{ stats.completedToday }}</span>
+                  <span class="stat-label">Terminées aujourd'hui</span>
+                </div>
+              </div>
+              
+              <div class="stat-item week">
+                <mat-icon>date_range</mat-icon>
+                <div class="stat-details">
+                  <span class="stat-number">{{ stats.createdThisWeek }}</span>
+                  <span class="stat-label">Cette semaine</span>
+                </div>
+              </div>
+              
+              <div class="stat-item week-completed">
+                <mat-icon>done_all</mat-icon>
+                <div class="stat-details">
+                  <span class="stat-number">{{ stats.completedThisWeek }}</span>
+                  <span class="stat-label">Terminées cette semaine</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Carte Information Future Fonctionnalité -->
+    <mat-card class="info-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>info</mat-icon>
+          Historique des tâches supprimées
+        </mat-card-title>
+        <mat-card-subtitle>Fonctionnalité en préparation</mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="info-content">
+          <mat-icon class="feature-icon">timeline</mat-icon>
+          <div class="feature-description">
+            <h4>Statistiques complètes bientôt disponibles</h4>
+            <p>
+              Actuellement, les tâches supprimées ne sont plus comptabilisées dans vos statistiques 
+              car l'API externe ne conserve pas l'historique.
+            </p>
+            <p>
+              <strong>Bonne nouvelle :</strong> Nous préparons déjà cette fonctionnalité pour notre futur backend ! 
+              Vos statistiques incluront alors toutes vos tâches créées et terminées, même celles supprimées.
+            </p>
+            <div class="feature-benefits">
+              <mat-chip-set>
+                <mat-chip>📊 Statistiques précises</mat-chip>
+                <mat-chip>🗂️ Historique complet</mat-chip>
+                <mat-chip>📈 Suivi de progression</mat-chip>
+              </mat-chip-set>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Actions -->
+    <mat-card class="actions-card">
+      <mat-card-content>
+        <div class="actions-row">
+          <button mat-raised-button color="primary" (click)="goBackToTasks()">
+            <mat-icon>list</mat-icon>
+            Retour aux tâches
+          </button>
+          
+          <button mat-stroked-button color="warn" (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            Se déconnecter
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+</div>

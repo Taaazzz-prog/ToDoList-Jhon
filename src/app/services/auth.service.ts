@@ -155,6 +155,35 @@ export class AuthService {
   }
 
   /**
+   * Récupérer le profil de l'utilisateur connecté
+   */
+  getUserProfile(): Observable<User> {
+    console.log('👤 AuthService.getUserProfile: Récupération du profil utilisateur');
+    
+    return this.http.get<any>(`${this.apiUrl}/user/profil`, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      map(response => {
+        console.log('✅ AuthService.getUserProfile: Réponse reçue =', response);
+        // L'API retourne probablement {data: userData}
+        const userData = response.data || response;
+        console.log('✅ AuthService.getUserProfile: Données utilisateur =', userData);
+        return userData;
+      }),
+      tap(user => {
+        // Mettre à jour l'utilisateur actuel si les données sont plus récentes
+        this.currentUserSubject.next(user);
+        // Sauvegarder en localStorage
+        localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+      }),
+      catchError(error => {
+        console.error('❌ AuthService.getUserProfile: Erreur =', error);
+        return this.handleError(error);
+      })
+    );
+  }
+
+  /**
    * Stocker les données d'authentification
    */
   private setAuthData(response: LoginResponse): void {

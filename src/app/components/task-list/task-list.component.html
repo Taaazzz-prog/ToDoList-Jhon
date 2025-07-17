@@ -10,6 +10,22 @@
         <div class="header-right">
           <span class="user-info">{{ getCurrentUser()?.email }}</span>
           <button 
+            mat-stroked-button 
+            color="primary" 
+            routerLink="/categories"
+            class="categories-button">
+            <mat-icon>category</mat-icon>
+            Catégories
+          </button>
+          <button 
+            mat-stroked-button 
+            color="primary" 
+            routerLink="/profile"
+            class="profile-button">
+            <mat-icon>person</mat-icon>
+            Mon profil
+          </button>
+          <button 
             mat-raised-button 
             color="accent" 
             (click)="logout()"
@@ -176,5 +192,27 @@
     matTooltip="Ajouter une tâche"
   >
     <mat-icon>add</mat-icon>
+  </button>
+
+  <!-- Bouton flottant pour le profil -->
+  <button
+    mat-mini-fab
+    color="accent"
+    class="fab-profile"
+    routerLink="/profile"
+    matTooltip="Mon profil"
+  >
+    <mat-icon>person</mat-icon>
+  </button>
+
+  <!-- Bouton flottant pour la déconnexion (visible uniquement sur mobile) -->
+  <button
+    mat-mini-fab
+    color="warn"
+    class="fab-logout"
+    (click)="logout()"
+    matTooltip="Se déconnecter"
+  >
+    <mat-icon>logout</mat-icon>
   </button>
 </div>

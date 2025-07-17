@@ -4,6 +4,7 @@ import { Observable, throwError, forkJoin, of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { Task, CreateTaskRequest, UpdateTaskRequest, TaskResponse, TaskFilter } from '../models/task.model';
 import { AuthService } from './auth.service';
+import { TaskHistoryService } from './task-history.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,8 @@ export class TaskService {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private taskHistoryService: TaskHistoryService
   ) {}
 
   /**
@@ -273,5 +275,97 @@ export class TaskService {
     
     console.error('❌ TaskService.handleError: Message d\'erreur final =', errorMessage);
     return throwError(errorMessage);
+  }
+
+  /**
+   * Obtenir des statistiques détaillées
+   */
+  getDetailedStats(): Observable<{
+    total: number;
+    completed: number;
+    active: number;
+    createdToday: number;
+    completedToday: number;
+    createdThisWeek: number;
+    completedThisWeek: number;
+  }> {
+    return this.getTasks().pipe(
+      map(tasks => {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+        const completedTasks = tasks.filter(task => task.done);
+        const activeTasks = tasks.filter(task => !task.done);
+
+        // Tâches créées aujourd'hui
+        const createdToday = tasks.filter(task => {
+          if (!task.created_at) return false;
+          const taskDate = new Date(task.created_at);
+          return taskDate >= today;
+        }).length;
+
+        // Tâches terminées aujourd'hui (estimation basée sur updated_at)
+        const completedToday = completedTasks.filter(task => {
+          if (!task.updated_at) return false;
+          const taskDate = new Date(task.updated_at);
+          return taskDate >= today;
+        }).length;
+
+        // Tâches créées cette semaine
+        const createdThisWeek = tasks.filter(task => {
+          if (!task.created_at) return false;
+          const taskDate = new Date(task.created_at);
+          return taskDate >= weekAgo;
+        }).length;
+
+        // Tâches terminées cette semaine
+        const completedThisWeek = completedTasks.filter(task => {
+          if (!task.updated_at) return false;
+          const taskDate = new Date(task.updated_at);
+          return taskDate >= weekAgo;
+        }).length;
+
+        return {
+          total: tasks.length,
+          completed: completedTasks.length,
+          active: activeTasks.length,
+          createdToday,
+          completedToday,
+          createdThisWeek,
+          completedThisWeek
+        };
+      })
+    );
+  }
+
+  /**
+   * Obtenir les statistiques d'historique des tâches supprimées
+   * (Prépare le terrain pour notre futur backend)
+   */
+  getHistoryStats() {
+    return this.taskHistoryService.calculateHistoryStats();
+  }
+
+  /**
+   * Marquer une tâche comme supprimée dans l'historique
+   * (Sera utilisé quand nous aurons notre propre backend)
+   */
+  recordTaskDeletion(task: Task): void {
+    this.taskHistoryService.markTaskAsDeleted(task);
+  }
+
+  /**
+   * Marquer une tâche comme créée dans l'historique
+   */
+  recordTaskCreation(task: Task): void {
+    this.taskHistoryService.addTaskToHistory(task);
+  }
+
+  /**
+   * Marquer une tâche comme terminée dans l'historique
+   */
+  recordTaskCompletion(task: Task): void {
+    this.taskHistoryService.markTaskAsCompleted(task);
   }
 }

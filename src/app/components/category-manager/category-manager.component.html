@@ -1,0 +1,133 @@
+<div class="category-manager">
+  
+  <!-- En-tête -->
+  <div class="header">
+    <div class="header-content">
+      <div class="title-section">
+        <mat-icon class="header-icon">category</mat-icon>
+        <div>
+          <h1>Gestion des catégories</h1>
+          <p class="subtitle">Organisez vos tâches par catégories personnalisées</p>
+        </div>
+      </div>
+      
+      <button 
+        mat-raised-button 
+        color="primary"
+        (click)="openCreateDialog()"
+        class="create-button">
+        <mat-icon>add</mat-icon>
+        Nouvelle catégorie
+      </button>
+    </div>
+  </div>
+
+  <!-- Message informatif -->
+  <div class="info-message" *ngIf="categories.length === 0 && !isLoading">
+    <mat-icon>info</mat-icon>
+    <div class="info-content">
+      <h3>Mode localStorage activé</h3>
+      <p>Les catégories sont stockées localement car l'API externe ne les supporte pas encore.</p>
+      <p>Créez vos premières catégories pour organiser vos tâches !</p>
+    </div>
+  </div>
+
+  <!-- Chargement -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-progress-spinner 
+      mode="indeterminate" 
+      diameter="50">
+    </mat-progress-spinner>
+    <p>Chargement des catégories...</p>
+  </div>
+
+  <!-- Liste des catégories -->
+  <div class="categories-grid" *ngIf="!isLoading && categories.length > 0">
+    <mat-card 
+      *ngFor="let category of categories; trackBy: trackByFn" 
+      class="category-card"
+      [class.has-tasks]="getCategoryTaskCount(category.id) > 0">
+      
+      <!-- En-tête de la carte -->
+      <mat-card-header class="category-header">
+        <div class="category-icon-container">
+          <mat-icon 
+            [style.color]="category.color"
+            class="category-icon">
+            {{ category.icon || 'label' }}
+          </mat-icon>
+        </div>
+        
+        <mat-card-title class="category-name">
+          {{ category.name }}
+        </mat-card-title>
+        
+        <div class="task-count-badge" *ngIf="getCategoryTaskCount(category.id) > 0">
+          <mat-icon>task_alt</mat-icon>
+          {{ getCategoryTaskCount(category.id) }}
+        </div>
+      </mat-card-header>
+
+      <!-- Contenu de la carte -->
+      <mat-card-content class="category-content">
+        <p class="category-description" *ngIf="category.description">
+          {{ category.description }}
+        </p>
+        <p class="no-description" *ngIf="!category.description">
+          Aucune description
+        </p>
+        
+        <!-- Statistiques -->
+        <div class="category-stats">
+          <div class="stat-item">
+            <mat-icon>event</mat-icon>
+            <span>Créée le {{ formatDate(category.created_at) }}</span>
+          </div>
+          <div class="stat-item" *ngIf="getCategoryTaskCount(category.id) > 0">
+            <mat-icon>assignment</mat-icon>
+            <span>{{ getCategoryTaskCount(category.id) }} tâche(s)</span>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <!-- Actions -->
+      <mat-card-actions class="category-actions">
+        <button 
+          mat-button 
+          color="primary"
+          (click)="editCategory(category)"
+          matTooltip="Modifier la catégorie">
+          <mat-icon>edit</mat-icon>
+          Modifier
+        </button>
+        
+        <button 
+          mat-button 
+          color="warn"
+          (click)="confirmDeleteCategory(category)"
+          matTooltip="Supprimer la catégorie"
+          [disabled]="getCategoryTaskCount(category.id) > 0">
+          <mat-icon>delete</mat-icon>
+          Supprimer
+        </button>
+      </mat-card-actions>
+      
+    </mat-card>
+  </div>
+
+  <!-- Message quand pas de catégories -->
+  <div class="empty-state" *ngIf="!isLoading && categories.length === 0">
+    <mat-icon class="empty-icon">category</mat-icon>
+    <h2>Aucune catégorie</h2>
+    <p>Commencez par créer votre première catégorie pour organiser vos tâches.</p>
+    <button 
+      mat-raised-button 
+      color="primary"
+      (click)="openCreateDialog()"
+      class="empty-action-button">
+      <mat-icon>add</mat-icon>
+      Créer ma première catégorie
+    </button>
+  </div>
+
+</div>

@@ -42,6 +42,28 @@
   color: white;
 }
 
+.profile-button,
+.categories-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: white !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  background: rgba(255, 255, 255, 0.1);
+  font-weight: 500;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.8) !important;
+    transform: translateY(-1px);
+  }
+  
+  mat-icon {
+    color: white !important;
+  }
+}
+
 .logout-button {
   display: flex;
   align-items: center;
@@ -246,6 +268,33 @@
   transform: scale(1.1);
 }
 
+.fab-profile {
+  position: fixed;
+  bottom: 96px; // Au-dessus du bouton add
+  right: 24px;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.fab-profile:hover {
+  transform: scale(1.1);
+}
+
+.fab-logout {
+  position: fixed;
+  bottom: 168px; // Au-dessus du bouton profil
+  right: 24px;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  display: none; // Caché par défaut sur desktop
+}
+
+.fab-logout:hover {
+  transform: scale(1.1);
+}
+
 /* Status indicators */
 .task-card.active {
   border-left-color: #2196f3;
@@ -305,6 +354,19 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  // Cacher les boutons du header sur mobile pour privilégier les FAB
+  .header-right {
+    .profile-button,
+    .logout-button {
+      display: none;
+    }
+  }
+  
+  // Garder seulement l'email utilisateur
+  .user-info {
+    font-size: 0.8rem;
+  }
+  
   .task-list-container {
     padding: 16px;
   }
@@ -332,6 +394,17 @@
     right: 16px;
   }
   
+  .fab-profile {
+    bottom: 80px;
+    right: 16px;
+  }
+  
+  .fab-logout {
+    display: block; // Afficher sur mobile
+    bottom: 144px;
+    right: 16px;
+  }
+  
   .empty-state {
     padding: 32px 16px;
   }
@@ -340,6 +413,58 @@
     font-size: 3rem;
     width: 3rem;
     height: 3rem;
+  }
+}
+
+/* Media query pour très petits écrans (smartphones) */
+@media (max-width: 480px) {
+  .header-content {
+    padding: 0 8px;
+  }
+  
+  .user-info {
+    font-size: 0.75rem;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .app-title {
+    font-size: 1.1rem;
+  }
+  
+  .task-list-container {
+    padding: 8px;
+  }
+  
+  .task-header {
+    padding: 8px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  
+  .stat-item {
+    padding: 8px;
+  }
+  
+  .fab-add, .fab-profile, .fab-logout {
+    right: 12px;
+  }
+  
+  .fab-add {
+    bottom: 12px;
+  }
+  
+  .fab-profile {
+    bottom: 72px;
+  }
+  
+  .fab-logout {
+    bottom: 132px;
   }
 }
 

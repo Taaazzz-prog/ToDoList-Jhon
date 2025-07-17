@@ -36,13 +36,22 @@ export class TaskService {
       params = params.set('completed', completed.toString());
     }
 
-    return this.http.get<TaskResponse>(`${this.apiUrl}/task/`, {
+    return this.http.get<any>(`${this.apiUrl}/tasks/`, {
       headers: this.authService.getAuthHeaders(),
       params
     }).pipe(
       map(response => {
         console.log('📋 TaskService.getTasks: Réponse brute de l\'API =', response);
-        const tasks = response.data || [];
+        const tasks = (response.data || []).map((t: any) => ({
+          id: t.id,
+          label: t.title,
+          done: t.completed,
+          created_at: t.createdAt,
+          updated_at: t.updatedAt,
+          id_user: t.userId,
+          category_id: t.categoryId,
+          // Ajout d'autres champs si besoin
+        }));
         console.log('📋 TaskService.getTasks: Tâches extraites =', tasks.length, 'tâche(s)');
         if (tasks.length > 0) {
           console.log('📋 TaskService.getTasks: Structure première tâche =', tasks[0]);
@@ -60,7 +69,7 @@ export class TaskService {
    */
   /* 
   getTask(id: string): Observable<Task> {
-    return this.http.get<Task>(`${this.apiUrl}/task/${id}/user`, {
+    return this.http.get<Task>(`${this.apiUrl}/tasks/${id}/user`, {
       headers: this.authService.getAuthHeaders()
     }).pipe(
       catchError(this.handleError)
@@ -108,11 +117,35 @@ export class TaskService {
    * Mettre à jour une tâche existante
    */
   updateTask(taskData: UpdateTaskRequest): Observable<Task> {
-    return this.http.put<any>(`${this.apiUrl}/task/${taskData.id}/label/user`, {label: taskData.label}, {
+    console.log('[DEBUG][updateTask] Préparation de la requête de mise à jour de la tâche', taskData.id);
+    // L'API attend title et non label
+    const body: any = {};
+    if (typeof taskData.label !== 'undefined') body.title = taskData.label;
+    if (typeof taskData.done !== 'undefined') body.completed = taskData.done;
+    console.log('[DEBUG][updateTask] Endpoint =', `${this.apiUrl}/tasks/${taskData.id}`);
+    console.log('[DEBUG][updateTask] Body =', body);
+    return this.http.put<any>(`${this.apiUrl}/tasks/${taskData.id}`, body, {
       headers: this.authService.getAuthHeaders()
     }).pipe(
-      map(() => taskData as Task),
-      catchError(this.handleError)
+      tap(response => console.log('[DEBUG][updateTask] Réponse API =', response)),
+      map(response => {
+        // On mappe la réponse backend (title) vers le modèle Angular (label)
+        const updatedTask: Task = {
+          id: response.id,
+          label: response.title,
+          done: response.completed,
+          created_at: response.createdAt,
+          updated_at: response.updatedAt,
+          id_user: response.userId,
+          category_id: response.categoryId
+        };
+        console.log('[DEBUG][updateTask] Tâche mappée =', updatedTask);
+        return updatedTask;
+      }),
+      catchError(error => {
+        console.error('[DEBUG][updateTask] Erreur =', error);
+        return this.handleError(error);
+      })
     );
   }
 
@@ -120,11 +153,32 @@ export class TaskService {
    * Basculer le statut de completion d'une tâche
    */
   toggleTaskCompletion(task: Task): Observable<Task> {
-    return this.http.put<any>(`${this.apiUrl}/task/${task.id}/done/user`, {}, {
+    console.log('[DEBUG][toggleTaskCompletion] Préparation du toggle done pour la tâche', task.id);
+    // L'API attend completed et non done
+    const body = { completed: !task.done };
+    console.log('[DEBUG][toggleTaskCompletion] Endpoint =', `${this.apiUrl}/tasks/${task.id}`);
+    console.log('[DEBUG][toggleTaskCompletion] Body =', body);
+    return this.http.put<any>(`${this.apiUrl}/tasks/${task.id}`, body, {
       headers: this.authService.getAuthHeaders()
     }).pipe(
-      map(() => ({ ...task, done: !task.done })),
-      catchError(this.handleError)
+      tap(response => console.log('[DEBUG][toggleTaskCompletion] Réponse API =', response)),
+      map(response => {
+        const toggledTask: Task = {
+          id: response.id,
+          label: response.title,
+          done: response.completed,
+          created_at: response.createdAt,
+          updated_at: response.updatedAt,
+          id_user: response.userId,
+          category_id: response.categoryId
+        };
+        console.log('[DEBUG][toggleTaskCompletion] Tâche mappée =', toggledTask);
+        return toggledTask;
+      }),
+      catchError(error => {
+        console.error('[DEBUG][toggleTaskCompletion] Erreur =', error);
+        return this.handleError(error);
+      })
     );
   }
 
@@ -132,10 +186,16 @@ export class TaskService {
    * Supprimer une tâche
    */
   deleteTask(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/task/${id}/user`, {
+    console.log('[DEBUG][deleteTask] Suppression de la tâche', id);
+    console.log('[DEBUG][deleteTask] Endpoint =', `${this.apiUrl}/tasks/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/tasks/${id}`, {
       headers: this.authService.getAuthHeaders()
     }).pipe(
-      catchError(this.handleError)
+      tap(() => console.log('[DEBUG][deleteTask] Suppression réussie pour la tâche', id)),
+      catchError(error => {
+        console.error('[DEBUG][deleteTask] Erreur =', error);
+        return this.handleError(error);
+      })
     );
   }
 
@@ -146,7 +206,7 @@ export class TaskService {
     console.log('🗑️ TaskService.deleteMultipleTasks: Suppression via endpoint officiel');
     console.log('🗑️ TaskService.deleteMultipleTasks: IDs à supprimer =', taskIds);
     
-    return this.http.post<void>(`${this.apiUrl}/task/delete/user`, {
+    return this.http.post<void>(`${this.apiUrl}/tasks/delete/user`, {
       task_ids: taskIds // Selon la doc API, probablement ce format
     }, {
       headers: this.authService.getAuthHeaders()
@@ -181,7 +241,7 @@ export class TaskService {
         console.log('🗑️ TaskService.deleteCompletedTasks: IDs à supprimer =', completedTaskIds);
         
         // Essayer d'abord l'endpoint officiel de suppression en masse
-        console.log('🔄 TaskService.deleteCompletedTasks: Tentative avec endpoint officiel POST /task/delete/user');
+        console.log('🔄 TaskService.deleteCompletedTasks: Tentative avec endpoint officiel POST /tasks/delete/user');
         return this.deleteMultipleTasks(completedTaskIds).pipe(
           tap(() => console.log('✅ TaskService.deleteCompletedTasks: Suppression en masse réussie avec endpoint officiel')),
           catchError(error => {

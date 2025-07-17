@@ -1,12 +1,23 @@
 {
-  "/api/*": {
-    "target": "https://todof.woopear.fr",
-    "secure": true,
+  "/api/v1/auth/*": {
+    "target": "http://localhost:3000/auth",
+    "secure": false,
     "changeOrigin": true,
-    "logLevel": "debug",
-    "headers": {
-      "Accept": "application/json",
-      "Content-Type": "application/json"
-    }
+    "pathRewrite": { "^/api/v1/auth": "" },
+    "logLevel": "debug"
+  },
+  "/api/v1/tasks/*": {
+    "target": "http://localhost:3000/tasks",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": { "^/api/v1/tasks": "" },
+    "logLevel": "debug"
+  },
+  "/api/v1/tasks": {
+    "target": "http://localhost:3000/tasks",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": { "^/api/v1/tasks": "" },
+    "logLevel": "debug"
   }
 }

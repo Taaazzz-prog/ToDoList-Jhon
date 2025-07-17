@@ -11,19 +11,27 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface LoginResponse {
-  data: {
-    token: string;
-    user: User;
-  };
-  message: string;
-  meta: {
-    method: string;
-    path: string;
-    status: number;
-    timestamp: string;
-  };
-}
+// Permet aussi une structure plate (token, user à la racine)
+export type LoginResponse =
+  | {
+      data: {
+        token: string;
+        user: User;
+      };
+      message: string;
+      meta: {
+        method: string;
+        path: string;
+        status: number;
+        timestamp: string;
+      };
+    }
+  | {
+      token: string;
+      user: User;
+      message?: string;
+      meta?: any;
+    };
 
 export interface RegisterRequest {
   email: string;

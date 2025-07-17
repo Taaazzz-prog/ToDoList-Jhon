@@ -42,9 +42,9 @@ export class AuthService {
   login(credentials: LoginRequest): Observable<LoginResponse> {
     console.log('🔐 AuthService.login: Début de la connexion');
     console.log('🔐 AuthService.login: credentials =', { email: credentials.email, password: '***' });
-    console.log('🔐 AuthService.login: URL =', `${this.apiUrl}/user/login`);
+    console.log('🔐 AuthService.login: URL =', `${this.apiUrl}/auth/login`);
     
-    return this.http.post<LoginResponse>(`${this.apiUrl}/user/login`, credentials)
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, credentials)
       .pipe(
         tap(response => {
           console.log('✅ AuthService.login: Réponse reçue =', response);
@@ -68,13 +68,13 @@ export class AuthService {
       password: '***',
       role: userData.role 
     });
-    console.log('📝 AuthService.register: URL =', `${this.apiUrl}/user/register`);
+    console.log('📝 AuthService.register: URL =', `${this.apiUrl}/auth/register`);
     console.log('📝 AuthService.register: Payload complet =', {
       ...userData,
       password: '***'
     });
     
-    return this.http.post<LoginResponse>(`${this.apiUrl}/user/register`, userData)
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/register`, userData)
       .pipe(
         tap(response => {
           console.log('✅ AuthService.register: Réponse reçue =', response);
@@ -189,39 +189,29 @@ export class AuthService {
   private setAuthData(response: LoginResponse): void {
     console.log('💾 AuthService.setAuthData: Stockage des données auth');
     console.log('💾 AuthService.setAuthData: response =', response);
-    console.log('💾 AuthService.setAuthData: response.data =', response.data);
-    
-    // Analyse de la structure de la réponse
-    if (response.data) {
+    if ('data' in response && response.data) {
+      console.log('💾 AuthService.setAuthData: response.data =', response.data);
       console.log('💾 AuthService.setAuthData: Clés dans response.data =', Object.keys(response.data));
     }
-    
-    // Tentative d'extraction du token et de l'utilisateur
+
+    // Extraction du token et de l'utilisateur, supporte {token, user} à la racine ou dans data
     let token: string | null = null;
     let user: any = null;
-    
-    if (response.data) {
-      // Cas direct: token et user dans data
-      if ('token' in response.data && response.data.token) {
-        token = response.data.token;
-        user = response.data.user;
-      }
-      // Cas alternatif: chercher dans la structure
-      else {
-        const responseAny = response.data as any;
-        if (responseAny.token) {
-          token = responseAny.token;
-          user = responseAny.user || responseAny;
-        }
-      }
+
+    if (response && 'data' in response && response.data && (response.data.token || response.data.user)) {
+      token = response.data.token;
+      user = response.data.user;
+    } else if ('token' in response && (response as any).token) {
+      token = (response as any).token;
+      user = (response as any).user;
     }
-    
+
     console.log('💾 AuthService.setAuthData: token extrait =', token ? 'existe' : 'absent');
     console.log('💾 AuthService.setAuthData: user extrait =', user);
-    
+
     if (token) {
       localStorage.setItem(this.TOKEN_KEY, token);
-      
+
       // Stocker l'utilisateur s'il existe
       if (user && user.email) {
         localStorage.setItem(this.USER_KEY, JSON.stringify(user));
@@ -231,7 +221,7 @@ export class AuthService {
         // Si pas d'utilisateur dans la réponse, extraire l'email du token JWT ou utiliser une API profile
         console.log('⚠️ AuthService.setAuthData: Pas de données utilisateur dans la réponse');
         console.log('⚠️ AuthService.setAuthData: Tentative de récupération via token JWT ou API profile');
-        
+
         // Tentative d'extraction de l'email depuis le JWT
         const userFromToken = this.extractUserFromToken(token);
         if (userFromToken) {
@@ -246,7 +236,7 @@ export class AuthService {
           console.log('⚠️ AuthService.setAuthData: Utilisateur minimal créé');
         }
       }
-      
+
       console.log('✅ AuthService.setAuthData: Token stocké:', token.substring(0, 20) + '...');
     } else {
       console.error('❌ AuthService.setAuthData: Token non trouvé dans la réponse');

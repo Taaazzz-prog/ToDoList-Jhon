@@ -1,0 +1,39 @@
+import express from 'express';
+import dotenv from 'dotenv';
+import { Logger } from './services/logger';
+import path from 'path';
+import authRoutes from './routes/auth.routes';
+import { errorHandler } from './middleware/errorHandler';
+
+// Chargement des variables d'environnement
+const envPath = path.join(__dirname, '../.env');
+dotenv.config({ path: envPath });
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(express.json());
+
+// Middleware de log ultra complet
+app.use((req, res, next) => {
+  Logger.info(`Requête entrante: ${req.method} ${req.url} | IP: ${req.ip}`);
+  res.on('finish', () => {
+    Logger.info(`Réponse: ${req.method} ${req.url} | Status: ${res.statusCode}`);
+  });
+  next();
+});
+
+// Routes d'authentification
+app.use('/auth', authRoutes);
+
+app.get('/health', (req, res) => {
+  Logger.debug('Vérification de santé demandée');
+  res.status(200).json({ status: 'ok', date: new Date().toISOString() });
+});
+
+// Gestion des erreurs globales
+app.use(errorHandler);
+
+app.listen(port, () => {
+  Logger.info(`Serveur backend démarré sur le port ${port} (env: ${process.env.NODE_ENV})`);
+});
